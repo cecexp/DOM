@@ -1,30 +1,41 @@
 'use client';
 
 import { useState } from 'react';
+import FormularioRegistro from '../components/FormularioRegistro'; // Ajusta ruta si es necesario
 
 export default function Home() {
-  const [formData, setFormData] = useState({
+  const [formData1, setFormData1] = useState({
     nombre: '',
     email: '',
     pais: '',
     terminos: false
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  const [formData2, setFormData2] = useState({
+    nombre: 'Empresa S.A.',
+    email: 'contacto@empresa.com',
+    pais: 'mx',
+    terminos: true
+  });
 
-  const handleCheckboxChange = (e) => {
-    const { name, checked } = e.target;
-    setFormData({ ...formData, [name]: checked });
-  };
+  const makeHandlers = (setFormData, nombreFormulario) => ({
+    handleChange: (e) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({ ...prev, [name]: value }));
+    },
+    handleCheckboxChange: (e) => {
+      const { name, checked } = e.target;
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    },
+    handleSubmit: (e) => {
+      e.preventDefault();
+      console.log(`Formulario "${nombreFormulario}" enviado:`, e.target);
+      alert(`Formulario "${nombreFormulario}" enviado`);
+    }
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert('Formulario enviado');
-    console.log(formData);
-  };
+  const handlers1 = makeHandlers(setFormData1, 'Usuario');
+  const handlers2 = makeHandlers(setFormData2, 'Empresa');
 
   return (
     <div style={{
@@ -67,108 +78,18 @@ export default function Home() {
       }}>
         <h1 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>Formulario de Registro</h1>
 
+        {/* Primer formulario con imagen */}
         <div style={{
           display: "flex",
           gap: "2rem",
           alignItems: "flex-start",
-          flexWrap: "wrap"
+          flexWrap: "wrap",
+          marginBottom: "4rem"
         }}>
-          <form
-            onSubmit={handleSubmit}
-            style={{
-              backgroundColor: "#F9F9F9",
-              padding: "1.5rem",
-              borderRadius: "12px",
-              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-              width: "100%",
-              maxWidth: "450px",
-              flex: "1"
-            }}
-          >
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "block", marginBottom: ".5rem" }}>
-                Nombre:
-              </label>
-              <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                style={{
-                  width: "100%",
-                  padding: ".5rem",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc"
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "block", marginBottom: ".5rem" }}>
-                Correo Electrónico:
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                style={{
-                  width: "100%",
-                  padding: ".5rem",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc"
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "block", marginBottom: ".5rem" }}>
-                Selecciona tu país:
-              </label>
-              <select
-                name="pais"
-                value={formData.pais}
-                onChange={handleChange}
-                style={{
-                  width: "100%",
-                  padding: ".5rem",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc"
-                }}
-              >
-                <option value="">Selecciona</option>
-                <option value="mx">México</option>
-                <option value="us">Estados Unidos</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: "1rem" }}>
-              <label>
-                <input
-                  type="checkbox"
-                  name="terminos"
-                  checked={formData.terminos}
-                  onChange={handleCheckboxChange}
-                  style={{ marginRight: ".5rem" }}
-                />
-                ¿Aceptas los términos?
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              style={{
-                backgroundColor: "#1C1C1C",
-                color: "#fff",
-                padding: ".75rem 1.5rem",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer"
-              }}
-            >
-              Enviar
-            </button>
-          </form>
+          <FormularioRegistro
+            formData={formData1}
+            {...handlers1}
+          />
 
           <div
             style={{
@@ -183,6 +104,15 @@ export default function Home() {
               boxShadow: "0 0 10px rgba(0,0,0,0.1)"
             }}
           ></div>
+        </div>
+
+        {/* Segundo formulario sin imagen, con datos distintos */}
+        <div>
+          <h2 style={{ marginBottom: "1rem" }}>Registro Empresarial</h2>
+          <FormularioRegistro
+            formData={formData2}
+            {...handlers2}
+          />
         </div>
       </main>
 
