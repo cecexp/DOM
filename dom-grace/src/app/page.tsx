@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import FormularioRegistro from '../components/FormularioRegistro'; // Ajusta ruta si es necesario
+import FormularioRegistro from '../components/FormularioRegistro';
 
 export default function Home() {
   const [formData1, setFormData1] = useState({
@@ -18,7 +18,7 @@ export default function Home() {
     terminos: true
   });
 
-  const makeHandlers = (setFormData, nombreFormulario) => ({
+  const makeHandlers = (formData, setFormData, nombreFormulario) => ({
     handleChange: (e) => {
       const { name, value } = e.target;
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -27,15 +27,29 @@ export default function Home() {
       const { name, checked } = e.target;
       setFormData(prev => ({ ...prev, [name]: checked }));
     },
-    handleSubmit: (e) => {
+    handleSubmit: async (e) => {
       e.preventDefault();
-      console.log(`Formulario "${nombreFormulario}" enviado:`, e.target);
-      alert(`Formulario "${nombreFormulario}" enviado`);
+      try {
+        const response = await fetch('http://localhost:3000/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) throw new Error('Error en la solicitud');
+
+        const result = await response.json();
+        console.log(`✔️ Formulario "${nombreFormulario}" enviado:`, result);
+        alert(`✔️ Formulario "${nombreFormulario}" enviado correctamente`);
+      } catch (error) {
+        console.error(`❌ Error al enviar el formulario "${nombreFormulario}":`, error);
+        alert(`❌ Error al enviar el formulario "${nombreFormulario}"`);
+      }
     }
   });
 
-  const handlers1 = makeHandlers(setFormData1, 'Usuario');
-  const handlers2 = makeHandlers(setFormData2, 'Empresa');
+  const handlers1 = makeHandlers(formData1, setFormData1, 'Usuario');
+  const handlers2 = makeHandlers(formData2, setFormData2, 'Empresa');
 
   return (
     <div style={{
